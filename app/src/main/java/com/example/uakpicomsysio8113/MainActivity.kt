@@ -1,12 +1,15 @@
 package com.example.uakpicomsysio8113
 
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.intrusoft.scatter.PieChart
+import com.jjoe64.graphview.GraphView
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,16 +20,21 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home, R.id.navigation_graphic))
+            R.id.navigation_home, R.id.navigation_graphic))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
 
-        val coordinate = CoordinateMA(35, 27, 62, Direction.LENGTH)
-        val coordinate1 = CoordinateMA(13, 43, -32, Direction.LENGTH)
+    fun onChangeChartClick(view: View) {
+        val graph = findViewById<GraphView>(R.id.graph)
+        val pieChart = findViewById<PieChart>(R.id.pie_chart)
 
-        println(coordinate.getDegreesSecondsMinutesDirection())
-        println(coordinate.getDegreesSecondsMinutesDirectionDouble())
-        println(coordinate.averageCoordinate(coordinate1))
-        println(coordinate.averageCoordinateTwoParameters(coordinate, coordinate1))
+        if (graph.visibility == View.GONE) {
+            graph.visibility = View.VISIBLE
+            pieChart.visibility = View.GONE
+        } else {
+            graph.visibility = View.GONE
+            pieChart.visibility = View.VISIBLE
+        }
     }
 }

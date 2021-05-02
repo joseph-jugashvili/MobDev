@@ -3,7 +3,7 @@
     package="com.example.uakpicomsysio8113">
 
     <application
-        android:fullBackupContent="@xml"
+        android:fullBackupContent= "@xml"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Uakpicomsysio8113">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.uakpicomsysio8113.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
