@@ -20,11 +20,10 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.navigation_home, R.id.navigation_graphic))
+                R.id.navigation_home, R.id.navigation_graphic, R.id.navigation_book))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
-
     fun onChangeChartClick(view: View) {
         val graph = findViewById<GraphView>(R.id.graph)
         val pieChart = findViewById<PieChart>(R.id.pie_chart)
