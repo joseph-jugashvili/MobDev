@@ -1,5 +1,6 @@
 package com.example.uakpicomsysio8113.ui.book
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -17,7 +18,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flatdialoglibrary.dialog.FlatDialog
 import com.example.uakpicomsysio8113.R
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.material.snackbar.Snackbar
@@ -55,6 +55,7 @@ class BookFragment : Fragment() {
         initBook()
         initSearchField()
         val arr = bookContainer.search
+
         adapter = ViewAdapterRecycler(requireContext(), arr) { item ->
             //  println("test"+ item)
             if (item.isbn13 != null && item.isbn13!!.isNotEmpty()) {
@@ -68,34 +69,43 @@ class BookFragment : Fragment() {
         view.findViewById<RecyclerView>(R.id.list).adapter = adapter
         enableSwipeToDeleteAndUndo()
         addButton = requireView().findViewById(R.id.add)
-        addButton.setOnClickListener {
-            val flatDialog = FlatDialog(requireContext())
-            flatDialog.setTitle("New book")
-                .setFirstTextFieldHint("Title")
-                .setSecondTextFieldHint("Price")
-                .setLargeTextFieldHint("Description")
-                .setFirstButtonText("Add")
-                .setSecondButtonText("Cancel")
-                .withFirstButtonListner {
-                    val search = Book()
-                    search.title = flatDialog.firstTextField
-                    search.subtitle = flatDialog.secondTextField
-                    search.price=flatDialog.largeTextField
-                    bookContainer.search.add(search)
-                    flatDialog.dismiss()
-                }
-                .withSecondButtonListner {
-                    flatDialog.dismiss()
-                }
-                .show()
+        addButton.setOnClickListener { withEditText(addButton)
         }
     }
+
+
+    fun withEditText(view: View) {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        builder.setTitle("Add new book")
+        val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_edittext, null)
+        val title = dialogLayout.findViewById<EditText>(R.id.title)
+        val subtitle = dialogLayout.findViewById<EditText>(R.id.subtitle)
+        var price = dialogLayout.findViewById<EditText>(R.id.price)
+        builder.setView(dialogLayout)
+        builder.setPositiveButton("Add") { dialogInterface, i ->
+            run {
+                val search = Book()
+                search.title = title.text.toString()
+                search.subtitle = subtitle.text.toString()
+                search.price = price.text.toString()
+                bookContainer.search.add(search)
+                dialogInterface.cancel()
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
+        builder.show()
+    }
+
 
     private fun initBook() {
         val mapper = ObjectMapper()
         val jsonText = requireView().resources.getString(R.string.json_books)
+        //  val jsonText = requireView().resources.getString(R.string.json_book)
         bookContainer = mapper.readValue(jsonText, BookContainer::class.java)
     }
+
+
     private fun initSearchField() {
 
 
@@ -122,25 +132,25 @@ class BookFragment : Fragment() {
     }
 
     private fun displaySnackBarWithBottomMargin(
-        snackbar: Snackbar,
-        sideMargin: Int,
-        marginBottom: Int
+            snackbar: Snackbar,
+            sideMargin: Int,
+            marginBottom: Int
     ) {
         val snackBarView = snackbar.view
         val params = snackBarView.layoutParams as CoordinatorLayout.LayoutParams
         params.setMargins(
-            params.leftMargin + sideMargin,
-            params.topMargin,
-            params.rightMargin + sideMargin,
-            params.bottomMargin + marginBottom
+                params.leftMargin + sideMargin,
+                params.topMargin,
+                params.rightMargin + sideMargin,
+                params.bottomMargin + marginBottom
         )
         snackBarView.layoutParams = params
         snackbar.show()
     }
 
     private fun enableSwipeToDeleteAndUndo() {
-        val swipeToDelete: SwipeToDelete = object : SwipeToDelete(
-            requireContext()
+        val swipeToDeleteCallback: SwipeToDelete = object : SwipeToDelete(
+                requireContext()
         ) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
                 try {
@@ -150,11 +160,11 @@ class BookFragment : Fragment() {
                     adapter.removeItem(position)
                     bookContainer.search.removeAt(position)
                     val snackbar: Snackbar = Snackbar
-                        .make(
-                            view,
-                            "Book was deleted!",
-                            Snackbar.LENGTH_LONG
-                        )
+                            .make(
+                                    view,
+                                    "Book was deleted!",
+                                    Snackbar.LENGTH_LONG
+                            )
                     snackbar.setAction("Undo", View.OnClickListener {
                         adapter.restoreItem(item, position)
                         bookContainer.search.add(position, suppData)
@@ -166,7 +176,7 @@ class BookFragment : Fragment() {
                 }
             }
         }
-        val itemTouchhelper = ItemTouchHelper(swipeToDelete)
+        val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchhelper.attachToRecyclerView(view.findViewById<RecyclerView>(R.id.list))
     }
 
@@ -179,4 +189,5 @@ class BookFragment : Fragment() {
             -1
         }
     }
+
 }

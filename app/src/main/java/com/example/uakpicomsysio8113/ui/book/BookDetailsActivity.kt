@@ -2,8 +2,6 @@ package com.example.uakpicomsysio8113.ui.book
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.textclassifier.TextLanguage
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.uakpicomsysio8113.R
